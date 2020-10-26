@@ -53,31 +53,31 @@ sort:
   sd   s3, 32(sp)
 
   # store arguments into saved registers
-  mv s0, a2  # reg s0 = addr v
-  mv s1, a3  # reg s1 = n
+  mv s0, a2                      # reg s0 = addr v
+  mv s1, a3                      # reg s1 = n
 
-  # for loop 1 (s2: i)
-  li s2, 0  # i = 0
-for1test:
-  bge s2, s1, for1exit  # if (i >= n) then jump to for1exit
-  # for loop 2 (s3: j)
-  addi s3, s2, -1  # j = i - 1
-for2test:
-  blt  s3, zero, for2exit  # if (j < 0) then jump to for2exit
-  slli t0, s3, 3   # reg t0 = j * 8
-  add  t0, s0, t0  # reg t0 = (addr v) + (j * 8)
-  ld   t1, 0(t0)   # reg t1 = v[j]
-  ld   t2, 8(t0)   # reg t2 = v[j+1]
-  ble  t1, t2, for2exit  # if (v[j] <= v[j+1]) then jump to for2exit
-  mv   a0, s0      # reg a0 = v
-  mv   a1, s3      # reg a1 = j
-  jal  swap        # call swap
-  addi s3, s3, -1  # j -= 1
-  j    for2test    # jump back to for2test
-for2exit:
-  addi s2, s2, 1  # i += 1
-  j    for1test   # jump back to for1test
-for1exit:
+  # for loop 1
+  li s2, 0                       # i = 0
+sort_for1test:
+  bge s2, s1, sort_for1exit      # if (i >= n) then jump to sort_for1exit
+  # for loop 2
+  addi s3, s2, -1                # j = i - 1
+sort_for2test:
+  blt  s3, zero, sort_for2exit   # if (j < 0) then jump to sort_for2exit
+  slli t0, s3, 3                 # reg t0 = j * 8
+  add  t0, s0, t0                # reg t0 = (addr v) + (j * 8)
+  ld   t1, 0(t0)                 # reg t1 = v[j]
+  ld   t2, 8(t0)                 # reg t2 = v[j+1]
+  ble  t1, t2, sort_for2exit     # if (v[j] <= v[j+1]) then jump to sort_for2exit
+  mv   a0, s0                    # reg a0 = v
+  mv   a1, s3                    # reg a1 = j
+  jal  swap                      # call swap
+  addi s3, s3, -1                # j -= 1
+  j    sort_for2test             # jump back to sort_for2test
+sort_for2exit:
+  addi s2, s2, 1                 # i += 1
+  j    sort_for1test             # jump back to sort_for1test
+sort_for1exit:
 
   # restore register values and return
   ld   ra, 0(sp)
